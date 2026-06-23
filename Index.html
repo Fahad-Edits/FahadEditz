@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fahad Amin | Premium Video Editor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Syne:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Variables */
+        :root {
+            --bg-color: #050507;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --accent-purple: #7B2CBF;
+            --accent-blue: #4361EE;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.05);
+            --glass-blur: blur(16px);
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Global Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none; /* Custom cursor */
+        }
+
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4, .brand-font {
+            font-family: 'Syne', sans-serif;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background-color 0.3s, border-color 0.3s;
+            mix-blend-mode: difference;
+        }
+        .cursor-dot {
+            width: 4px;
+            height: 4px;
+            background-color: white;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+        }
+        .cursor.hover {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255,255,255,0.1);
+            border-color: transparent;
+            mix-blend-mode: normal;
+            backdrop-filter: blur(2px);
+        }
+
+        /* Background Glows */
+        .bg-glow-1 {
+            position: fixed;
+            width: 70vw;
+            height: 70vw;
+            background: radial-gradient(circle, rgba(123,44,191,0.08) 0%, rgba(0,0,0,0) 60%);
+            top: -20vh;
+            left: -20vw;
+            border-radius: 50%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .bg-glow-2 {
+            position: fixed;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(67,97,238,0.06) 0%, rgba(0,0,0,0) 60%);
+            bottom: -10vh;
+            right: -10vw;
+            border-radius: 50%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Loader */
+        #loader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            background: var(--bg-color);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease, visibility 1s ease;
+        }
+        .loader-brand {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: 0.2em;
+            background: linear-gradient(90deg, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0;
+            animation: fadeIn 1s forwards 0.5s;
+        }
+        .loader-text {
+            margin-top: 1rem;
+            color: var(--text-muted);
+            font-size: 1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: fadeIn 1s forwards 1s;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(20px); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 15, 20, 0.6);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--card-border);
+            padding: 1rem 3rem;
+            border-radius: 50px;
+            z-index: 1000;
+            display: flex;
+            gap: 3rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: var(--transition);
+        }
+        nav ul {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+        nav a {
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            position: relative;
+            transition: var(--transition);
+        }
+        nav a:hover {
+            color: #fff;
+        }
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue));
+            transition: width 0.3s ease;
+        }
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* Typography & Layout */
+        section {
+            padding: 8rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .section-header {
+            margin-bottom: 4rem;
+            text-align: center;
+        }
+        .section-title {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #aaa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: #fff;
+            box-shadow: 0 10px 20px rgba(123, 44, 191, 0.2);
+        }
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            opacity: 0;
+            z-index: -1;
+            transition: var(--transition);
+        }
+        .btn-primary:hover::before {
+            opacity: 1;
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(123, 44, 191, 0.4);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            backdrop-filter: blur(5px);
+        }
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.4);
+            transform: translateY(-3px);
+        }
+
+        /* Reveal Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hero Section */
+        #home {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding-top: 10rem;
+        }
+        .hero-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            width: 100%;
+        }
+        .hero-content {
+            z-index: 2;
+        }
+        .hero-subtitle {
+            color: var(--accent-blue);
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+        .hero-title {
+            font-size: 5.5rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #ffffff, #888888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        .hero-headline {
+            font-size: 2rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 300;
+            color: #e4e4e7;
+            margin-bottom: 2rem;
+            line-height: 1.3;
+        }
+        .hero-desc {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            max-width: 90%;
+        }
+        .hero-btns {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        /* Hero Image styling */
+        .hero-image-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .hero-image-glow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(123,44,191,0.4) 0%, rgba(0,0,0,0) 70%);
+            filter: blur(40px);
+            z-index: 0;
+            animation: pulseGlow 4s infinite alternate;
+        }
+        @keyframes pulseGlow {
+            0% { transform: scale(0.9); opacity: 0.7; }
+            100% { transform: scale(1.1); opacity: 1; }
+        }
+        .hero-image {
+            position: relative;
+            z-index: 1;
+            max-width: 100%;
+            height: auto;
+            border-radius: 20px;
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 80%, rgba(0,0,0,0) 100%);
+            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 80%, rgba(0,0,0,0) 100%);
+        }
+
+        /* About Section */
+        #about {
+            position: relative;
+        }
+        .about-glass-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid var(--card-border);
+            border-radius: 30px;
+            padding: 5rem;
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            position: relative;
+            overflow: hidden;
+        }
+        .about-glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        }
+        .about-text {
+            font-size: 1.6rem;
+            line-height: 1.8;
+            font-weight: 300;
+            text-align: center;
+            color: #d4d4d8;
+        }
+        .about-text strong {
+            color: #fff;
+            font-weight: 500;
+        }
+
+        /* Statistics */
+        #stats {
+            padding: 4rem 5%;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            text-align: center;
+        }
+        .stat-item {
+            padding: 3rem;
+        }
+        .stat-number {
+            font-size: 4.5rem;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .stat-label {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Skills Section */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .skill-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        .skill-card::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+        .skill-card:hover::after {
+            opacity: 1;
+        }
+        .skill-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(123, 44, 191, 0.4);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .skill-name {
+            font-size: 1.2rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        /* Portfolio Section */
+        .portfolio-category {
+            margin-bottom: 6rem;
+        }
+        .category-title {
+            font-size: 2rem;
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #fff;
+        }
+        .category-title::after {
+            content: '';
+            height: 1px;
+            flex-grow: 1;
+            background: linear-gradient(90deg, rgba(255,255,255,0.2), transparent);
+        }
+
+        .shorts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 2rem;
+        }
+        .long-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 3rem;
+        }
+
+        .video-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: var(--transition);
+            position: relative;
+            padding: 1rem;
+        }
+        .video-card:hover {
+            transform: scale(1.02) translateY(-10px);
+            border-color: rgba(67, 97, 238, 0.4);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        }
+        
+        .video-wrapper-short {
+            position: relative;
+            width: 100%;
+            padding-bottom: 177.77%; /* 16:9 Aspect Ratio (Shorts) */
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .video-wrapper-long {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio (Long form) */
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .video-card iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+            border-radius: 16px;
+        }
+
+        /* Contact Section */
+        #contact {
+            text-align: center;
+            position: relative;
+            padding-bottom: 6rem;
+        }
+        .contact-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0) 100%);
+            border: 1px solid var(--card-border);
+            border-radius: 40px;
+            padding: 6rem 3rem;
+            max-width: 800px;
+            margin: 0 auto;
+            backdrop-filter: blur(20px);
+        }
+        .contact-name {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+        }
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+        }
+        .contact-details a {
+            color: #fff;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .contact-details a:hover {
+            color: var(--accent-blue);
+        }
+        .contact-btns {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--card-border);
+            padding: 4rem 5%;
+            text-align: center;
+            background: #020203;
+        }
+        .footer-brand {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .footer-title {
+            color: var(--accent-purple);
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+        .footer-slogan {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-title { font-size: 4rem; }
+            .hero-headline { font-size: 1.5rem; }
+            .about-glass-card { padding: 3rem; }
+        }
+        @media (max-width: 768px) {
+            nav { width: 90%; padding: 1rem; gap: 1rem; justify-content: center; border-radius: 20px;}
+            nav ul { display: none; } /* Could add hamburger, keeping simple for elegance */
+            nav::after { content: 'FAHAD AMIN'; font-family: 'Syne'; font-weight: 700; font-size: 1.2rem; }
+            
+            .hero-container { grid-template-columns: 1fr; text-align: center; margin-top: 2rem;}
+            .hero-btns { justify-content: center; }
+            .hero-image-wrapper { order: -1; max-width: 300px; margin: 0 auto; }
+            
+            .stats-grid { grid-template-columns: 1fr; gap: 3rem; }
+            .stat-item { padding: 1rem; }
+            
+            .contact-btns { flex-direction: column; }
+            .long-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Elements -->
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-dot" id="cursor-dot"></div>
+
+    <!-- Loader -->
+    <div id="loader">
+        <div class="loader-brand">FAHAD</div>
+        <div class="loader-text">Turning Raw Footage Into Engaging Content</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="#home" class="hover-target">Home</a></li>
+            <li><a href="#about" class="hover-target">About</a></li>
+            <li><a href="#skills" class="hover-target">Skills</a></li>
+            <li><a href="#portfolio" class="hover-target">Portfolio</a></li>
+            <li><a href="#contact" class="hover-target">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home">
+        <div class="hero-container">
+            <div class="hero-content reveal">
+                <span class="hero-subtitle">Video Editor</span>
+                <h1 class="hero-title brand-font">FAHAD AMIN</h1>
+                <h2 class="hero-headline">Turning Raw Footage Into Engaging Content</h2>
+                <p class="hero-desc">
+                    Professional Video Editor helping creators, brands and businesses transform ordinary footage into high-retention content through storytelling, pacing and strategic editing.
+                </p>
+                <div class="hero-btns">
+                    <a href="#portfolio" class="btn btn-primary hover-target">View Portfolio</a>
+                    <a href="#contact" class="btn btn-outline hover-target">Contact Me</a>
+                </div>
+            </div>
+            <div class="hero-image-wrapper reveal" style="transition-delay: 0.2s;">
+                <div class="hero-image-glow"></div>
+                <!-- Assuming the user has the uploaded file named 1000238766.png in the same directory -->
+                <img src="1000238766.png" alt="Fahad Amin" class="hero-image" onerror="this.src='https://via.placeholder.com/500x700/111116/7B2CBF?text=Fahad+Amin';">
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="about-glass-card reveal">
+            <p class="about-text">
+                I am a professional video editor with over <strong>3 years of experience</strong> creating YouTube videos, marketing content, and social media videos. I have worked with multiple YouTube channels, creators, and brands, helping them improve audience retention through strong storytelling, pacing, and engaging edits. My goal is to create content that not only looks professional but also <strong>keeps viewers watching</strong>.
+            </p>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section id="stats">
+        <div class="stats-grid reveal">
+            <div class="stat-item">
+                <div class="stat-number"><span class="counter" data-target="100">0</span>+</div>
+                <div class="stat-label">Projects Completed</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number"><span class="counter" data-target="200">0</span>+</div>
+                <div class="stat-label">Videos Edited</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number"><span class="counter" data-target="3">0</span>+</div>
+                <div class="stat-label">Years Experience</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills">
+        <div class="section-header reveal">
+            <h2 class="section-title">Professional Skills</h2>
+        </div>
+        <div class="skills-grid reveal">
+            <div class="skill-card hover-target"><div class="skill-name">YouTube Editing</div></div>
+            <div class="skill-card hover-target"><div class="skill-name">Short Form Editing</div></div>
+            <div class="skill-card hover-target"><div class="skill-name">Long Form Editing</div></div>
+            <div class="skill-card hover-target"><div class="skill-name">Marketing Videos</div></div>
+            <div class="skill-card hover-target"><div class="skill-name">Social Media Content</div></div>
+            <div class="skill-card hover-target"><div class="skill-name">Storytelling</div></div>
+            <div class="skill-card hover-target"><div class="skill-name">Content Pacing</div></div>
+            <div class="skill-card hover-target"><div class="skill-name">Video Optimization</div></div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio">
+        <div class="section-header reveal">
+            <h2 class="section-title">Selected Works</h2>
+        </div>
+
+        <div class="portfolio-category reveal">
+            <h3 class="category-title brand-font">SHORT FORM CONTENT</h3>
+            <div class="shorts-grid">
+                <!-- Short 1 -->
+                <div class="video-card hover-target">
+                    <div class="video-wrapper-short">
+                        <iframe src="https://www.youtube.com/embed/5pVPMLv1iVs" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <!-- Short 2 -->
+                <div class="video-card hover-target">
+                    <div class="video-wrapper-short">
+                        <iframe src="https://www.youtube.com/embed/9xSeGcvHQVU" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <!-- Short 3 -->
+                <div class="video-card hover-target">
+                    <div class="video-wrapper-short">
+                        <iframe src="https://www.youtube.com/embed/34vX03-rV2M" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <!-- Short 4 -->
+                <div class="video-card hover-target">
+                    <div class="video-wrapper-short">
+                        <iframe src="https://www.youtube.com/embed/-IK0779ANhs" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <!-- Short 5 -->
+                <div class="video-card hover-target">
+                    <div class="video-wrapper-short">
+                        <iframe src="https://www.youtube.com/embed/542fqpVVIHY" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <!-- Short 6 -->
+                <div class="video-card hover-target">
+                    <div class="video-wrapper-short">
+                        <iframe src="https://www.youtube.com/embed/xRArb47p5us" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <!-- Short 7 -->
+                <div class="video-card hover-target">
+                    <div class="video-wrapper-short">
+                        <iframe src="https://www.youtube.com/embed/_4OyhGSDuE0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="portfolio-category reveal">
+            <h3 class="category-title brand-font">LONG FORM CONTENT</h3>
+            <div class="long-grid">
+                <!-- Long 1 -->
+                <div class="video-card hover-target">
+                    <div class="video-wrapper-long">
+                        <iframe src="https://www.youtube.com/embed/VRraGrMmuIA" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <!-- Long 2 -->
+                <div class="video-card hover-target">
+                    <div class="video-wrapper-long">
+                        <iframe src="https://www.youtube.com/embed/2qaf-_ZNwXE" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <!-- Long 3 -->
+                <div class="video-card hover-target">
+                    <div class="video-wrapper-long">
+                        <iframe src="https://www.youtube.com/embed/Cm5MKh54Nd4" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="contact-card reveal">
+            <h2 class="contact-name brand-font">Fahad Amin</h2>
+            <div class="contact-details">
+                <div>Email: <br><a href="mailto:itsfahad190@gmail.com" class="hover-target">itsfahad190@gmail.com</a></div>
+                <div>WhatsApp: <br><a href="https://wa.me/92317346090" class="hover-target" target="_blank">0317346090</a></div>
+            </div>
+            <div class="contact-btns">
+                <a href="mailto:itsfahad190@gmail.com" class="btn btn-primary hover-target">Send Email</a>
+                <a href="https://wa.me/92317346090" class="btn btn-outline hover-target" target="_blank">Message on WhatsApp</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-brand brand-font reveal">FAHAD AMIN</div>
+        <div class="footer-title reveal">Video Editor</div>
+        <div class="footer-slogan reveal">Turning Raw Footage Into Engaging Content</div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Loader
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.visibility = 'hidden';
+                }, 1000);
+            }, 2500); // Show loader for 2.5s
+        });
+
+        // Custom Cursor
+        const cursor = document.getElementById('cursor');
+        const cursorDot = document.getElementById('cursor-dot');
+        const hoverTargets = document.querySelectorAll('.hover-target');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            cursorDot.style.left = e.clientX + 'px';
+            cursorDot.style.top = e.clientY + 'px';
+        });
+
+        hoverTargets.forEach(target => {
+            target.addEventListener('mouseenter', () => {
+                cursor.classList.add('hover');
+            });
+            target.addEventListener('mouseleave', () => {
+                cursor.classList.remove('hover');
+            });
+        });
+
+        // Hide cursor for iframes (fixes glitchy feeling when hovering videos)
+        const iframes = document.querySelectorAll('iframe');
+        iframes.forEach(iframe => {
+            iframe.addEventListener('mouseenter', () => {
+                cursor.style.display = 'none';
+                cursorDot.style.display = 'none';
+            });
+            iframe.addEventListener('mouseleave', () => {
+                cursor.style.display = 'block';
+                cursorDot.style.display = 'block';
+            });
+        });
+
+        // Reveal Animations & Counter
+        const reveals = document.querySelectorAll('.reveal');
+        const counters = document.querySelectorAll('.counter');
+        let animated = false;
+
+        const revealOnScroll = () => {
+            const windowHeight = window.innerHeight;
+            
+            reveals.forEach(reveal => {
+                const revealTop = reveal.getBoundingClientRect().top;
+                const revealPoint = 100;
+
+                if(revealTop < windowHeight - revealPoint) {
+                    reveal.classList.add('active');
+                }
+            });
+
+            // Trigger Counters when stats section is visible
+            const statsSection = document.getElementById('stats');
+            if(statsSection) {
+                const statsTop = statsSection.getBoundingClientRect().top;
+                if(statsTop < windowHeight - 100 && !animated) {
+                    animated = true;
+                    counters.forEach(counter => {
+                        const target = +counter.getAttribute('data-target');
+                        const duration = 2000; // 2 seconds
+                        const increment = target / (duration / 16); // 60fps
+
+                        let current = 0;
+                        const updateCounter = () => {
+                            current += increment;
+                            if(current < target) {
+                                counter.innerText = Math.ceil(current);
+                                requestAnimationFrame(updateCounter);
+                            } else {
+                                counter.innerText = target;
+                            }
+                        };
+                        updateCounter();
+                    });
+                }
+            }
+        };
+
+        window.addEventListener('scroll', revealOnScroll);
+        // Trigger once on load
+        setTimeout(revealOnScroll, 1000);
+    </script>
+</body>
+</html>
